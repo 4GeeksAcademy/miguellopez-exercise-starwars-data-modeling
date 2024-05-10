@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float
+from sqlalchemy import Column, ForeignKey, Integer, String 
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import create_engine
 from eralchemy2 import render_er
@@ -8,58 +8,59 @@ from eralchemy2 import render_er
 Base = declarative_base()
 
 class Usuario(Base):
-    __tablename__ = 'usuarios'
-    id = Column(Integer, primary_key=True)
-    nombre = Column(String(250), nullable=False)
-    apellido = Column(String(50), nullable=False)
-    password = Column(String(50), nullable=False)
-    fecha_de_subscripcion = Column(DateTime, nullable=False)
-    email = Column(String(100), nullable=False)
-    favoritos = Column(Integer)
+    __tablename__ = 'usuario'
+    user_id = Column(Integer, primary_key=True)
+    username = Column(String(200), unique=True)
+    firstname = Column(String(200))
+    last_name = Column(String(200))
+    email = Column(String(200))
+
+    favoritos = relationship("Favoritos")
 
 class Planetas(Base):
     __tablename__ = 'planetas'
-    id_planeta = Column(Integer, primary_key=True)
-    nombre_planeta = Column(String(100), nullable=False)
-    periodo_rotacion = Column(Integer, nullable=False)
-    diametro = Column(Float, nullable=False)
-    clima = Column(String(50), nullable=False)
-    terreno = Column(String(50), nullable=False)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    usuario = relationship(Usuario)
+    id = Column(Integer, primary_key=True)
+    planeta_id = Column(Integer)
+    name = Column(String(200))
+    diametro = Column(Integer)
+    clima = Column(String(200))
 
-class Nombres(Base):
-    __tablename__ = 'personas'
-    id_persona = Column(Integer, primary_key=True)
-    nombre_persona = Column(String(100), nullable=False)
-    peso = Column(Integer, nullable=False)
-    color_de_piel = Column(String(20), nullable=False)
-    color_de_pelo = Column(String(20))
-    genero = Column(String(20))
-    birth_year = Column(Integer, nullable=False)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    usuario = relationship(Usuario)
+class Personajes(Base):
+    __tablename__ = 'personajes'
+    id = Column(Integer, primary_key=True)
+    personaje_id = Column(Integer)
+    name = Column(String(200))
+    altura = Column(Integer)
+    peso = Column(Integer)
+    color_piel = Column(String(200))
 
 class Vehiculos(Base):
     __tablename__ = 'vehiculos'
-    id_vehiculos = Column(Integer, primary_key=True)
-    nombre_vehiculos = Column(String(100), nullable=False)
-    modelo = Column(String(50), nullable=False)
-    longitud = Column(Float, nullable=False)
-    tripulacion = Column(Integer, nullable=False)
-    clase_de_vehiculo = Column(String, nullable=False)
-    capacidad_de_carga = Column(Integer, nullable=False)
-    velocidad_maxima = Column(Integer, nullable=False)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    usuario = relationship(Usuario)
+    id = Column(Integer, primary_key=True)
+    vehiculo_id = Column(Integer)
+    name = Column(String(200))
+    velocidad = Column(Integer)
+    modelo = Column(String(200))
+    color = Column(String(200))
+   
+class Favoritos(Base):
+    __tablename__ = 'favoritos'
+    favorito_id = Column(Integer, primary_key=True)
 
-def to_dict(self):
-    return {}
+    usuario_id = Column(Integer, ForeignKey("usuario.user_id"))
+    usuario = relationship("Usuario")
+
+    personaje_id = Column(Integer, ForeignKey("personajes.personaje_id"))
+    personajes = relationship("Personajes")
+
+    planeta_id = Column(Integer, ForeignKey("planetas.planeta_id"))
+    planetas = relationship("Planetas")
+
+    vehiculo_id = Column(Integer, ForeignKey("vehiculos.vehiculos_id"))
+    vehiculos = relationship("Vehiculos")
+
+    def to_dict(self):
+        return {}
 
 ## Draw from SQLAlchemy base
-try:
-    result = render_er(Base, 'diagram.png')
-    print("Success! Check the diagram.png file")
-except Exception as e:
-    print("There was a problem generating the diagram")
-    raise e
+render_er(Base, 'diagram.png')
